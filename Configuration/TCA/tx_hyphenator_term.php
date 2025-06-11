@@ -6,17 +6,13 @@ return [
         'default_sortby' => 'ORDER BY from',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
-        'cruser_id' => 'cruser_id',
         'delete' => 'deleted',
         'title' => 'LLL:EXT:typo3_hyphenator/Resources/Private/Language/locallang_tca.tx_hyphenator_term.xlf:tx_hyphenator_term',
         'enablecolumns' => [
             'disabled' => 'hidden',
         ],
-        'iconfile' => 'EXT:typo3_hyphenator/Resources/Public/Backend/Icons/tx_hyphenator_term.svg',
+        'iconfile' => 'EXT:typo3_hyphenator/Resources/Public/Icons/Extension.svg',
         'searchFields' => 'from',
-    ],
-    'interface' => [
-        'showRecordFieldList' => 'hidden, from, to',
     ],
     'columns' => [
         'hidden' => [
@@ -31,8 +27,9 @@ return [
             'config' => [
                 'type' => 'input',
                 'size' => 50,
-                'eval' => 'trim,required',
+                'eval' => 'trim',
                 'max' => 255,
+                'required' => true,
             ],
         ],
         'to' => [
@@ -41,8 +38,9 @@ return [
             'config' => [
                 'type' => 'input',
                 'size' => 50,
-                'eval' => 'trim,required,StraschekIo\\Hyphenator\\Evaluation\\PipeEvaluation',
+                'eval' => 'trim,StraschekIo\Hyphenator\Evaluation\PipeEvaluation',
                 'max' => 255,
+                'required' => true,
             ],
         ],
     ],

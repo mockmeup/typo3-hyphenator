@@ -30,6 +30,15 @@ class PipeEvaluation
         return preg_replace($this->getBackendEvaluationRegex(), '', $value);
     }
 
+    /**
+     * @param array $parameters Array with key 'value' containing the field value from the database
+     * @return string Evaluated field value
+     */
+    public function deevaluateFieldValue(array $parameters)
+    {
+        return $parameters['value'];
+    }
+
     private function getBackendEvaluationRegex(): string
     {
         $backendEvaluationRegex = GeneralUtility::makeInstance(ExtensionConfiguration::class)
@@ -40,14 +49,5 @@ class PipeEvaluation
 
         // @see https://regex101.com/r/5EZvxZ/1
         return '/[^a-zA-Z0-9_-| ]/';
-    }
-
-    /**
-     * @param array $parameters Array with key 'value' containing the field value from the database
-     * @return string Evaluated field value
-     */
-    public function deevaluateFieldValue(array $parameters)
-    {
-        return $parameters['value'];
     }
 }

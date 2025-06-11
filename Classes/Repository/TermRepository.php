@@ -9,16 +9,14 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class TermRepository
 {
-    private $queryBuilder = null;
-
     public function fetchAll(): ?array
     {
         $queryBuilder = $this->getQueryBuilder();
         $records = $queryBuilder
             ->select('from', 'to')
             ->from('tx_hyphenator_term')
-            ->execute()
-            ->fetchAll();
+            ->executeQuery()
+            ->fetchAllAssociative();
 
         if (!empty($records)) {
             return $records;
@@ -27,12 +25,9 @@ class TermRepository
         return null;
     }
 
-    private function getQueryBuilder()
+    private function getQueryBuilder(): QueryBuilder
     {
-        if (!$this->queryBuilder instanceof QueryBuilder) {
-            $this->queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+        return GeneralUtility::makeInstance(ConnectionPool::class)
                 ->getQueryBuilderForTable('tx_hyphenator_term');
-        }
-        return $this->queryBuilder;
     }
 }

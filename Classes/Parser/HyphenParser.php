@@ -9,12 +9,53 @@ class HyphenParser
         array $terms,
         string $content
     ): string {
+        $preparedTerms = [];
+
         foreach ($terms as $term) {
-            $termReplacement = str_replace('|', '&shy;', strip_tags($term['to']));
-            // super simple: super fast: https://regex101.com/r/SaXo0A/1
-            $content = preg_replace('/(?<=[\>.*\s])' . $term['from'] . '(?!.*\s\<\/head\>)/s', $termReplacement, $content);
+            $preparedTerms[] = [
+                'pattern' => '/(?<![\pL\pN])'
+                    . preg_quote($term['from'], '/')
+                    . '(?![\pL\pN])/u',
+
+                'replacement' => str_replace(
+                    '|',
+                    "\u{00AD}",
+                    strip_tags($term['to'])
+                ),
+            ];
         }
 
-        return $content;
+        $dom = new \DOMDocument();
+
+        libxml_use_internal_errors(true);
+
+        $dom->loadHTML(
+            '<?xml encoding="utf-8" ?>' . $content,
+            LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
+        );
+
+        libxml_clear_errors();
+
+        $xpath = new \DOMXPath($dom);
+
+        $textNodes = $xpath->query(
+            '//text()[not(ancestor::head) and not(ancestor::script) and not(ancestor::style)]'
+        );
+
+        foreach ($textNodes as $textNode) {
+            $text = $textNode->nodeValue;
+
+            foreach ($preparedTerms as $term) {
+                $text = preg_replace(
+                    $term['pattern'],
+                    $term['replacement'],
+                    $text
+                );
+            }
+
+            $textNode->nodeValue = $text;
+        }
+
+        return $dom->saveHTML();
     }
 }
